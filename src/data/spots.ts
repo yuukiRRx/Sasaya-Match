@@ -1,0 +1,504 @@
+export type Category = 'food' | 'history' | 'sightseeing' | 'festival';
+
+export interface SpotData {
+  id: string;
+  name: string;
+  category: Category;
+  feature: string;
+  description: string;
+  tags: string[];
+  imageUrl: string;
+  budget?: string;
+  duration?: string;
+  mapQuery?: string;
+}
+
+export const spots: SpotData[] = [
+  // --- 🍽️ グルメ (Food) ---
+  {
+    id: 'food-1',
+    name: 'ぼたん鍋',
+    category: 'food',
+    feature: '丹波篠山の冬の味覚、イノシシ肉の極上鍋',
+    description: '丹波篠山名物的ぼたん鍋は、味噌仕立てのスープと新鮮な猪肉が絶品です。体の芯から温まります。',
+    tags: ['#ご当地グルメ', '#インスタ映え', '#絶品ランチ'],
+    imageUrl: '/images/botan_nabe.png',
+    budget: '5000円〜',
+    duration: '90分',
+    mapQuery: 'ぼたん鍋 丹波篠山'
+  },
+  {
+    id: 'food-2',
+    name: '黒豆ソフトクリーム',
+    category: 'food',
+    feature: '特産の黒豆を贅沢に使ったスイーツ',
+    description: '丹波篠山特産の黒大豆を使用したご当地ソフトクリーム。香ばしい黒豆の風味とコクが楽しめます。食べ歩きに最適！',
+    tags: ['#食べ歩き', '#スイーツ', '#インスタ映え'],
+    imageUrl: '/images/kuromame_soft.png',
+    budget: '400円〜',
+    duration: '15分',
+    mapQuery: '黒豆ソフト 丹波篠山'
+  },
+  {
+    id: 'food-3',
+    name: '特選 丹波篠山牛',
+    category: 'food',
+    feature: 'とろけるような柔らかさの最高級和牛',
+    description: '丹波篠山の豊かな自然の中で育ったブランド牛。ステーキや焼肉など、肉本来の旨味と甘みを存分に堪能できる贅沢な逸品です。',
+    tags: ['#ご褒美ランチ', '#最高級', '#お肉'],
+    imageUrl: '/images/tanbagyu.jpg',
+    budget: '4000円〜',
+    duration: '60分',
+    mapQuery: '丹波篠山牛'
+  },
+  {
+    id: 'food-4',
+    name: '黒豆パン',
+    category: 'food',
+    feature: '大粒の黒豆がゴロゴロ入った名物パン',
+    description: '丹波篠山の特産品である黒豆をふんだんに使ったご当地パン。甘く煮た黒豆とふわふわのパン生地の相性が抜群です。',
+    tags: ['#パン屋巡り', '#食べ歩き', '#ご当地グルメ'],
+    imageUrl: '/images/kuromame_pan.jpg',
+    budget: '200円〜',
+    duration: '10分',
+    mapQuery: '丹波篠山 黒豆パン'
+  },
+  {
+    id: 'food-5',
+    name: '山の芋料理',
+    category: 'food',
+    feature: '強い粘りとコクが特徴の幻の芋',
+    description: '丹波篠山の気候が育んだ「山の芋」は、お好み焼きやとろろご飯などにすると絶品です。栄養価も高くヘルシー！',
+    tags: ['#ヘルシー', '#和食', '#特産品'],
+    imageUrl: '/images/yamanoimo.jpg',
+    budget: '1500円〜',
+    duration: '60分',
+    mapQuery: '丹波篠山 山の芋'
+  },
+  {
+    id: 'food-6',
+    name: '丹波栗のモンブラン',
+    category: 'food',
+    feature: '秋の味覚「丹波栗」を贅沢に使った絶品スイーツ',
+    description: '大粒で甘みが強い丹波栗をたっぷり使ったモンブラン。秋の丹波篠山を訪れたら絶対に外せない人気のスイーツです。',
+    tags: ['#カフェ巡り', '#スイーツ', '#秋限定'],
+    imageUrl: '/images/monburan.jpg',
+    budget: '800円〜',
+    duration: '45分',
+    mapQuery: '丹波篠山 モンブラン'
+  },
+  {
+    id: 'food-7',
+    name: '猪肉のバーベキュー',
+    category: 'food',
+    feature: '自然の中で味わうワイルドな猪肉',
+    description: '新鮮な猪肉を炭火で豪快に焼いて楽しむバーベキュー。臭みがなく、脂の甘みが口いっぱいに広がります。',
+    tags: ['#アウトドア', '#ジビエ', '#家族で'],
+    imageUrl: '/images/bbq.jpg',
+    budget: '3000円〜',
+    duration: '120分',
+    mapQuery: '丹波篠山 バーベキュー'
+  },
+  {
+    id: 'food-8',
+    name: 'ささやま茶と和菓子',
+    category: 'food',
+    feature: '城下町の風情を味わいながら一服',
+    description: '丹波篠山で栽培された香り豊かなお茶と、地元の和菓子職人が作る季節の生菓子のセット。歴史ある空間でほっと一息つけます。',
+    tags: ['#和カフェ', '#抹茶', '#癒し'],
+    imageUrl: '/images/wagasi.jpg',
+    budget: '1000円〜',
+    duration: '45分',
+    mapQuery: '丹波篠山 和カフェ'
+  },
+  {
+    id: 'food-9',
+    name: '丹波篠山の地酒',
+    category: 'food',
+    feature: '豊かな水と米が育んだ銘酒',
+    description: '丹波杜氏の伝統技術で醸された地酒。酒蔵見学ができる場所もあり、試飲をしながらお好みの日本酒を探せます。',
+    tags: ['#日本酒', '#酒蔵巡り', '#お土産'],
+    imageUrl: '/images/tizake.jpg',
+    budget: '1500円〜',
+    duration: '30分',
+    mapQuery: '丹波篠山 酒蔵'
+  },
+  {
+    id: 'food-10',
+    name: '焼き栗',
+    category: 'food',
+    feature: 'ホクホクで甘い秋の風物詩',
+    description: '秋になると街のあちこちで焼き栗のいい香りが漂います。大粒の丹波栗をその場で焼いた熱々の焼き栗は絶品です。',
+    tags: ['#食べ歩き', '#秋の味覚', '#丹波栗'],
+    imageUrl: '/images/yakiguri.jpg',
+    budget: '500円〜',
+    duration: '10分',
+    mapQuery: '丹波篠山 焼き栗'
+  },
+
+  // --- 🏯 歴史 (History) ---
+  {
+    id: 'history-1',
+    name: '篠山城大書院',
+    category: 'history',
+    feature: '徳川家康が築城を命じた名城の木造復元建築',
+    description: '大書院は、篠山城の中核となる建物です。往時の姿をそのままに復元された広大な木造建築は圧巻で、歴史の重みを感じられます。',
+    tags: ['#歴史ロマン', '#フォトジェニック', '#お城めぐり'],
+    imageUrl: '/images/syoin.jpg',
+    budget: '大人400円',
+    duration: '45分',
+    mapQuery: '篠山城大書院'
+  },
+  {
+    id: 'history-2',
+    name: '武家屋敷群 (御徒士町)',
+    category: 'history',
+    feature: '江戸時代の風情がそのまま残る美しい街並み',
+    description: 'かつての武士たちが暮らした屋敷が立ち並ぶエリア。土壁や門構えなど、江戸時代の風情を感じながら散策できます。史料館として公開されている屋敷もあります。',
+    tags: ['#タイムスリップ', '#エモい', '#写真好き'],
+    imageUrl: '/images/ie.jpg',
+    budget: '無料（一部有料）',
+    duration: '60分',
+    mapQuery: '丹波篠山 御徒士町武家屋敷群'
+  },
+  {
+    id: 'history-3',
+    name: '青山歴史村',
+    category: 'history',
+    feature: '旧篠山藩主・青山家の歴史を今に伝える',
+    description: '藩主の別邸であった「桂園舎」を中心に、当時の貴重な品々や古文書が展示されています。版木など珍しい資料も。',
+    tags: ['#歴史探訪', '#庭園', '#静寂'],
+    imageUrl: '/images/aoyama.jpg',
+    budget: '大人300円',
+    duration: '40分',
+    mapQuery: '青山歴史村'
+  },
+  {
+    id: 'history-4',
+    name: '大正ロマン館',
+    category: 'history',
+    feature: '大正時代の旧町役場を改装したレトロ建築',
+    description: '大正12年に建てられた洋風建築。館内にはカフェやお土産売り場があり、レトロな雰囲気の中で食事や買い物が楽しめます。',
+    tags: ['#レトロ建築', '#カフェ', '#お土産'],
+    imageUrl: '/images/roman_kan.jpg',
+    budget: '無料',
+    duration: '30分',
+    mapQuery: '丹波篠山 大正ロマン館'
+  },
+  {
+    id: 'history-5',
+    name: '歴史美術館',
+    category: 'history',
+    feature: '日本最古の木造裁判所を利用した美術館',
+    description: '明治時代に建てられた木造の裁判所をそのまま利用しており、法廷の様子なども見学できます。丹波篠山の歴史資料が豊富に展示されています。',
+    tags: ['#美術館', '#明治建築', '#学び'],
+    imageUrl: '/images/rekisi.jpg',
+    budget: '大人300円',
+    duration: '45分',
+    mapQuery: '丹波篠山市立歴史美術館'
+  },
+  {
+    id: 'history-6',
+    name: '王地山まけきらい稲荷',
+    category: 'history',
+    feature: '連なる赤い鳥居が圧巻のパワースポット',
+    description: '勝利を呼ぶ「まけきらい」の神様として知られる神社。赤い鳥居が階段沿いにズラリと並ぶ風景はとても美しく、写真映えします。',
+    tags: ['#パワースポット', '#絶景', '#鳥居'],
+    imageUrl: '/images/makekirai.jpg',
+    budget: '無料',
+    duration: '40分',
+    mapQuery: '王地山まけきらい稲荷'
+  },
+  {
+    id: 'history-7',
+    name: '八上城跡（高城山）',
+    category: 'history',
+    feature: '明智光秀の丹波攻めの舞台となった山城跡',
+    description: '波多野氏の居城であった八上城の跡。ハイキングコースが整備されており、山頂からは丹波篠山の盆地を一望できる絶景が広がります。',
+    tags: ['#山城', '#ハイキング', '#絶景'],
+    imageUrl: '/images/siro.jpg',
+    budget: '無料',
+    duration: '120分',
+    mapQuery: '八上城跡'
+  },
+  {
+    id: 'history-8',
+    name: '春日神社',
+    category: 'history',
+    feature: '黒神馬や能舞台が残る由緒ある神社',
+    description: '奈良の春日大社から分霊された由緒ある神社。境内には国の重要文化財に指定された能舞台や、絵馬堂があります。',
+    tags: ['#神社巡り', '#重要文化財', '#静寂'],
+    imageUrl: '/images/kasuga.jpg',
+    budget: '無料',
+    duration: '30分',
+    mapQuery: '丹波篠山 春日神社'
+  },
+  {
+    id: 'history-9',
+    name: '福住の街並み',
+    category: 'history',
+    feature: '宿場町の面影を残す国の重要伝統的建造物群保存地区',
+    description: 'かつて京街道の宿場町として栄えた福住地区。今も昔ながらの古民家が点在し、のんびりとした田舎の風景を楽しむことができます。',
+    tags: ['#宿場町', '#古民家', '#サイクリング'],
+    imageUrl: '/images/matinami.jpg',
+    budget: '無料',
+    duration: '60分',
+    mapQuery: '丹波篠山 福住'
+  },
+  {
+    id: 'history-10',
+    name: '丹波杜氏酒造記念館',
+    category: 'history',
+    feature: '日本三大杜氏・丹波杜氏の歴史と技術を学ぶ',
+    description: '酒造りの道具や工程が分かりやすく展示されており、丹波篠山が誇る酒造りの伝統文化に触れることができます。',
+    tags: ['#伝統文化', '#酒造り', '#学び'],
+    imageUrl: '/images/sake_kinen.jpg',
+    budget: '大人100円',
+    duration: '30分',
+    mapQuery: '丹波杜氏酒造記念館'
+  },
+
+  // --- ♨️ 観光・自然 (Sightseeing) ---
+  {
+    id: 'sightseeing-1',
+    name: '河原町妻入商家群',
+    category: 'sightseeing',
+    feature: 'レトロで可愛い！雑貨屋やカフェが並ぶ通り',
+    description: '江戸時代から続く商家の街並み。現在は古民家を改装したおしゃれなカフェや雑貨店が多く、若者にも大人気のスポットです。',
+    tags: ['#カフェ巡り', '#レトロ', '#街歩き'],
+    imageUrl: '/images/kawahara.jpg',
+    budget: '1000円〜',
+    duration: '120分',
+    mapQuery: '河原町妻入商家群'
+  },
+  {
+    id: 'sightseeing-2',
+    name: 'こんだ薬師温泉 ぬくもりの郷',
+    category: 'sightseeing',
+    feature: '大自然に囲まれた癒しの天然温泉',
+    description: '丹波焼をふんだんに使ったお風呂が魅力。自然豊かな景色を眺めながら、ゆったりと心身を癒すことができます。',
+    tags: ['#リラックス', '#温泉', '#癒し'],
+    imageUrl: '/images/onsen.png',
+    budget: '700円',
+    duration: '90分',
+    mapQuery: 'こんだ薬師温泉 ぬくもりの郷'
+  },
+  {
+    id: 'sightseeing-3',
+    name: '立杭 陶の郷',
+    category: 'sightseeing',
+    feature: '日本六古窯の一つ「丹波焼」のふるさと',
+    description: '数多くの窯元が集まるエリア。陶芸体験ができたり、お気に入りの和食器を探したりと、一日中楽しめる文化的なスポットです。',
+    tags: ['#陶芸体験', '#和食器', '#アート'],
+    imageUrl: '/images/kougei.jpg',
+    budget: '入園無料（体験別途）',
+    duration: '120分',
+    mapQuery: '立杭 陶の郷'
+  },
+  {
+    id: 'sightseeing-4',
+    name: '兵庫県立ささやまの森公園',
+    category: 'sightseeing',
+    feature: '大自然の中でのびのび遊べる広大な公園',
+    description: '豊かな森に囲まれた公園で、アスレチックやハイキングが楽しめます。家族連れでのピクニックに最適なリフレッシュスポット。',
+    tags: ['#自然', '#ピクニック', '#ファミリー'],
+    imageUrl: '/images/mori_kouen.jpg',
+    budget: '無料',
+    duration: '120分',
+    mapQuery: 'ささやまの森公園'
+  },
+  {
+    id: 'sightseeing-5',
+    name: '黒豆の館',
+    category: 'sightseeing',
+    feature: '特産品ショッピングと田舎バイキング',
+    description: '丹波篠山の特産品が豊富に揃う施設。特に地元の野菜や特産品を使ったレストランのバイキングが大人気です。',
+    tags: ['#ショッピング', '#バイキング', '#お土産'],
+    imageUrl: '/images/kuromame_yakata.jpg',
+    budget: '1500円〜',
+    duration: '90分',
+    mapQuery: '丹波篠山 黒豆の館'
+  },
+  {
+    id: 'sightseeing-6',
+    name: 'ユニトピアささやま',
+    category: 'sightseeing',
+    feature: '森のなかの総合リゾート施設',
+    description: '広大な敷地内に宿泊施設、アスレチック、プール、温泉などが揃うリゾート。大自然の中でアクティブに遊べます。',
+    tags: ['#アクティビティ', '#リゾート', '#アウトドア'],
+    imageUrl: '/images/yunitopia.jpg',
+    budget: '入園300円',
+    duration: '180分',
+    mapQuery: 'ユニトピアささやま'
+  },
+  {
+    id: 'sightseeing-7',
+    name: '集落丸山',
+    category: 'sightseeing',
+    feature: '日本の原風景が残る、限界集落を再生した宿',
+    description: 'のどかな田園風景と古民家が並ぶ美しい集落。一棟貸しの古民家宿や、かまどで炊くご飯体験など、日本の丁寧な暮らしを体験できます。',
+    tags: ['#古民家', '#田舎暮らし', '#絶景'],
+    imageUrl: '/images/maruyama.jpg',
+    budget: '見学無料',
+    duration: '60分',
+    mapQuery: '集落丸山'
+  },
+  {
+    id: 'sightseeing-8',
+    name: '大国寺',
+    category: 'sightseeing',
+    feature: '重要文化財の仏像と美しい紅葉のお寺',
+    description: '静寂に包まれた山寺。見事な仏像が安置されており、秋には境内が鮮やかな紅葉に染まる知る人ぞ知る名所です。',
+    tags: ['#お寺巡り', '#紅葉', '#重要文化財'],
+    imageUrl: '/images/daikokuji.jpg',
+    budget: '無料',
+    duration: '40分',
+    mapQuery: '丹波篠山 大国寺'
+  },
+  {
+    id: 'sightseeing-9',
+    name: '王地山陶器所',
+    category: 'sightseeing',
+    feature: '幻の「王地山焼」を復興した青磁の工房',
+    description: 'かつて篠山藩が作らせていた美しい青磁「王地山焼」。その気品ある緑色の陶器の製作風景や、作品を購入することができます。',
+    tags: ['#伝統工芸', '#陶器', '#芸術'],
+    imageUrl: '/images/toukijo.jpg',
+    budget: '見学無料',
+    duration: '30分',
+    mapQuery: '王地山陶器所'
+  },
+  {
+    id: 'sightseeing-10',
+    name: '並木道中央公園',
+    category: 'sightseeing',
+    feature: 'メタセコイアの並木が美しい広大な公園',
+    description: '四季折々の花や樹木が楽しめる公園。特に秋のメタセコイア並木の紅葉は圧巻で、散歩や写真撮影に絶好のスポットです。',
+    tags: ['#メタセコイア', '#散歩', '#自然'],
+    imageUrl: '/images/namikimiti.jpg',
+    budget: '無料',
+    duration: '60分',
+    mapQuery: '兵庫県立並木道中央公園'
+  },
+
+  // --- 🎆 祭り・イベント (Festival) ---
+  {
+    id: 'festival-1',
+    name: 'デカンショ祭',
+    category: 'festival',
+    feature: '西日本最大級の盆踊り！夏の夜を彩る大イベント',
+    description: '「デカンショ節」に合わせて踊る、丹波篠山の夏の一大イベント。巨大なやぐらと花火、そして熱気に包まれる夜は最高の思い出になります。',
+    tags: ['#夏祭り', '#花火', '#思い出作り'],
+    imageUrl: '/images/dekansyo.png',
+    budget: '入場無料',
+    duration: '180分',
+    mapQuery: 'デカンショ祭'
+  },
+  {
+    id: 'festival-2',
+    name: '丹波篠山もみじまつり',
+    category: 'festival',
+    feature: '秋の絶景！歴史ある街並みと紅葉のコラボ',
+    description: '秋になると市内各所で美しい紅葉が見られます。特に王地山公園や大国寺などの紅葉スポットは、写真撮影にぴったりです。',
+    tags: ['#秋', '#絶景', '#紅葉'],
+    imageUrl: '/images/momiji.jpg',
+    budget: '無料',
+    duration: '60分',
+    mapQuery: '丹波篠山 紅葉'
+  },
+  {
+    id: 'festival-3',
+    name: '春日神社 丹波篠山春日能',
+    category: 'festival',
+    feature: '国の重要文化財に指定された荘厳な能舞台',
+    description: '春日神社の境内にある江戸時代建築の能舞台で行われる伝統行事。かがり火の中で演じられる能は、幽玄な世界が広がります。',
+    tags: ['#伝統芸能', '#重要文化財', '#幽玄'],
+    imageUrl: '/images/noubutai.jpg',
+    budget: '無料（観覧一部有料）',
+    duration: '90分',
+    mapQuery: '春日神社 篠山'
+  },
+  {
+    id: 'festival-4',
+    name: '丹波篠山味まつり',
+    category: 'festival',
+    feature: '黒枝豆や丹波栗！秋の味覚が城下町に大集合',
+    description: '毎年10月に行われる丹波篠山最大のグルメイベント。解禁されたばかりの黒枝豆や、丹波栗、猪肉など、秋の味覚を求めて全国から人が集まります。',
+    tags: ['#グルメイベント', '#黒枝豆', '#食べ歩き'],
+    imageUrl: '/images/ajimaturi.jpg',
+    budget: '入場無料',
+    duration: '180分',
+    mapQuery: '丹波篠山味まつり'
+  },
+  {
+    id: 'festival-5',
+    name: '丹波焼陶器まつり',
+    category: 'festival',
+    feature: 'お気に入りの器に出会える秋の陶器市',
+    description: '立杭地区周辺で開催される陶器まつり。多くの窯元が参加し、普段よりお得に丹波焼を購入できたり、オークションなどのイベントも楽しめます。',
+    tags: ['#陶器市', '#うつわ好き', '#イベント'],
+    imageUrl: '/images/touki_maturi.jpg',
+    budget: '入場無料',
+    duration: '120分',
+    mapQuery: '丹波焼陶器まつり'
+  },
+  {
+    id: 'festival-6',
+    name: '篠山城下町ひなまつり',
+    category: 'festival',
+    feature: '街じゅうが可愛いお雛様で彩られる春の訪れ',
+    description: '商家や町家など、市内各所でお雛様が飾られます。江戸時代の古いお雛様から手作りのものまで、風情ある街並みと合わせて楽しめます。',
+    tags: ['#ひなまつり', '#春', '#街歩き'],
+    imageUrl: '/images/hinamaturi.jpg',
+    budget: '無料',
+    duration: '90分',
+    mapQuery: '篠山城下町ひなまつり'
+  },
+  {
+    id: 'festival-7',
+    name: '宿場町古市まつり',
+    category: 'festival',
+    feature: '旧宿場町を練り歩く伝統のだんじり',
+    description: '古市地区で行われる秋祭り。豪華な装飾が施されただんじり（山車）が古い宿場町を練り歩く姿は迫力満点です。',
+    tags: ['#だんじり', '#秋祭り', '#迫力'],
+    imageUrl: '/images/furuiti.jpg',
+    budget: '無料',
+    duration: '60分',
+    mapQuery: '古市まつり'
+  },
+  {
+    id: 'festival-8',
+    name: 'たんばささやまABCマラソン',
+    category: 'festival',
+    feature: '日本陸連公認！城下町と田園風景を駆け抜ける',
+    description: '毎年3月に開催されるフルマラソン大会。沿道の温かい応援と、完走後のしし汁の振る舞いがランナーに大人気です。',
+    tags: ['#マラソン', '#スポーツ', '#イベント'],
+    imageUrl: '/images/marason.jpeg',
+    budget: '観覧無料',
+    duration: '180分',
+    mapQuery: 'ABCマラソン 丹波篠山'
+  },
+  {
+    id: 'festival-9',
+    name: '丹波篠山国際博 (EXPO)',
+    category: 'festival',
+    feature: '「農と食」「歴史と文化」を世界に発信する祭典',
+    description: '丹波篠山市の魅力を国内外に発信する博覧会。アート展示、食のイベント、地域交流など、期間中は様々な特別プログラムが開催されます。',
+    tags: ['#国際博', '#アート', '#特別イベント'],
+    imageUrl: '/images/kokusaihaku.jpg',
+    budget: 'イベントによる',
+    duration: '120分',
+    mapQuery: '丹波篠山国際博'
+  },
+  {
+    id: 'festival-10',
+    name: '猪まつり',
+    category: 'festival',
+    feature: '冬の訪れを告げる、イノシシづくしのユニークな祭り',
+    description: 'ぼたん鍋のシーズン到来を祝うお祭り。猪の丸焼きの振る舞いや、猪の着ぐるみを着て走るレースなど、ユニークな催しが盛りだくさんです。',
+    tags: ['#ユニーク', '#冬祭り', '#グルメ'],
+    imageUrl: '/images/inosisi_maturi.jpg',
+    budget: '無料',
+    duration: '90分',
+    mapQuery: '丹波篠山 猪まつり'
+  }
+];

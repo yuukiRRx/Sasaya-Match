@@ -1,0 +1,68 @@
+個人製作
+
+あなたに合う丹波篠山案内アプリ
+
+
+
+「最初から大量の文章を読ませる」のではなく、
+興味から選ばせるUI 
+
+
+実行方法
+npm run dev
+
+
+
+
+ハッシュタグ検索
+ランキング
+予算設定して案を出す
+戻る統一
+
+
+
+https://sasaya-match.vercel.app 
+
+
+
+ 世界に公開する！サーバー公開手順（Vercel編）
+無料で一番かんたんに公開できる「Vercel」を使った手順です。
+
+Step 1: 最終チェック（ビルドテスト）
+まずは、エラーなく公開用のファイルが作れるか確認します。 VSCodeのターミナルで以下のコマンドを打ってください。
+
+bash
+npm run build
+「✓ built in ...s」と出れば準備完了です！
+
+Step 2: 公開用ツールのインストール
+世界にアップロードするための「Vercel」という道具をあなたのPCに入れます。（一度やれば次からは不要です）
+
+bash
+npm install -g vercel
+Step 3: 公開（デプロイ）の実行！
+いよいよ本番です。以下のコマンドを打ちます。
+
+bash
+vercel
+コマンドを打つと、ターミナルでいくつか質問されます。 基本的には**すべてそのまま「Enterキー」**を押せば大丈夫です！
+
+Set up and deploy “~\Sasaya-Match”? [Y/n] → Enter
+Which scope do you want to deploy to? → Enter
+Link to existing project? [y/N] → Enter
+What’s your project’s name? → そのまま Enter （または好きな英数字の名前）
+In which directory is your code located? → そのまま Enter
+Want to modify these settings? [y/N] → そのまま Enter
+Step 4: URLを確認する
+アップロードが終わると、最後に以下のような文字が表示されます。
+
+Production: https://sasaya-match-xxxx.vercel.app
+
+このURLをクリックして、ブラウザで自分のアプリが開けば公開完了です！🎉 このURLを友達に送ったり、スマホで開いたりしてみてください。
+
+💡 修正した内容を反映したいときは？
+画像を入れ替えたり、コードを書き換えたりした後に、最新の状態に更新したい場合は、もう一度ターミナルで以下のコマンドを打つだけです。
+
+bash
+vercel --prod
+（--prod をつけると、今見ているURLが最新の状態に上書きされます！）

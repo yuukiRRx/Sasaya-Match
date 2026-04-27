@@ -1,0 +1,15 @@
+# 不要なファイルを除外する
+
+# ライブラリ（絶対アップしない）
+node_modules/
+
+# ビルド成果物
+dist/
+
+# Vercelの設定
+.vercel/
+
+# エディタ・OSの設定
+.vscode/
+.DS_Store
+Thumbs.db
