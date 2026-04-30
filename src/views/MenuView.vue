@@ -129,6 +129,7 @@ const userInitial = store.userName ? store.userName.charAt(0).toUpperCase() : 'G
   align-items: center;
   text-align: center;
   padding: 28px 12px;
+  min-height: 160px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
@@ -138,6 +139,7 @@ const userInitial = store.userName ? store.userName.charAt(0).toUpperCase() : 'G
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 上部のグラデーションアクセント */
@@ -219,6 +221,7 @@ const userInitial = store.userName ? store.userName.charAt(0).toUpperCase() : 'G
   align-items: center;
   gap: 16px;
   padding: 20px 24px;
+  min-height: 72px;
   background: linear-gradient(135deg, var(--primary-color), #A94A4A);
   border-radius: 24px;
   text-decoration: none;
@@ -227,6 +230,7 @@ const userInitial = store.userName ? store.userName.charAt(0).toUpperCase() : 'G
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* バナーの光沢エフェクト */

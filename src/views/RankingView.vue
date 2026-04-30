@@ -93,7 +93,8 @@ const rankedSpots = computed(() => {
   white-space: nowrap;
   font-size: 13px;
   font-weight: 800;
-  padding: 10px 20px;
+  padding: 12px 22px;
+  min-height: 48px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 1);
   background: rgba(255, 255, 255, 0.85);
@@ -105,6 +106,7 @@ const rankedSpots = computed(() => {
   display: flex;
   align-items: center;
   gap: 6px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .rank-tab:hover {

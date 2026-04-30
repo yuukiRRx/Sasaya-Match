@@ -164,12 +164,14 @@ const filteredSpots = computed(() => {
   font-weight: 700;
   color: white;
   background: linear-gradient(135deg, var(--primary-color), var(--festival-color));
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 12px 20px;
+  min-height: 48px;
+  border-radius: 24px;
   text-decoration: none;
   box-shadow: 0 3px 10px rgba(138,58,58,0.2);
   transition: all 0.2s;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .swipe-mode-btn:hover {
@@ -186,6 +188,7 @@ const filteredSpots = computed(() => {
   align-items: center;
   gap: 12px;
   padding: 14px 18px;
+  min-height: 52px;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 1);
@@ -230,8 +233,9 @@ const filteredSpots = computed(() => {
 .filter-tag {
   font-size: 12px;
   font-weight: 700;
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 10px 18px;
+  min-height: 44px;
+  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 1);
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
@@ -239,6 +243,9 @@ const filteredSpots = computed(() => {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 「もっと見る」ボタンのスタイル */
@@ -272,7 +279,8 @@ const filteredSpots = computed(() => {
   white-space: nowrap;
   font-size: 13px;
   font-weight: 800;
-  padding: 10px 20px;
+  padding: 12px 22px;
+  min-height: 48px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 1);
   background: rgba(255, 255, 255, 0.85);
@@ -284,6 +292,7 @@ const filteredSpots = computed(() => {
   display: flex;
   align-items: center;
   gap: 6px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cat-btn:hover {

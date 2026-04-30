@@ -140,8 +140,8 @@ const removeFav = (id: string) => {
 }
 
 .remove-btn {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
   background: rgba(231, 76, 60, 0.08);
@@ -153,6 +153,7 @@ const removeFav = (id: string) => {
   margin-right: 16px;
   flex-shrink: 0;
   transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .remove-btn:hover {

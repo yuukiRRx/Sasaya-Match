@@ -16,8 +16,8 @@ const goBack = () => router.back()
   position: absolute;
   top: 20px;
   left: 16px;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
@@ -30,6 +30,7 @@ const goBack = () => router.back()
   z-index: 50;
   transition: all 0.2s;
   color: var(--text-main);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .back-button:hover {
@@ -38,6 +39,7 @@ const goBack = () => router.back()
 }
 
 .back-button:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
+  background: rgba(240, 240, 240, 0.95);
 }
 </style>

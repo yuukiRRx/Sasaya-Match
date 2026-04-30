@@ -132,8 +132,8 @@ const toggleFavorite = () => {
   position: absolute;
   top: 24px;
   left: 20px;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(255, 255, 255, 1);
@@ -145,6 +145,7 @@ const toggleFavorite = () => {
   backdrop-filter: blur(10px);
   z-index: 2;
   transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .back-icon-btn:hover {
@@ -156,8 +157,8 @@ const toggleFavorite = () => {
   position: absolute;
   bottom: -28px;
   right: 28px;
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid white;
@@ -169,6 +170,7 @@ const toggleFavorite = () => {
   z-index: 11;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   backdrop-filter: blur(10px);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .favorite-btn:hover {
@@ -297,6 +299,7 @@ const toggleFavorite = () => {
   color: white;
   text-decoration: none;
   padding: 20px;
+  min-height: 60px;
   border-radius: 30px;
   font-weight: 800;
   font-size: 16px;
@@ -304,6 +307,7 @@ const toggleFavorite = () => {
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   margin-top: auto;
   border: 2px solid rgba(255,255,255,0.2);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .map-btn:hover {
@@ -312,6 +316,6 @@ const toggleFavorite = () => {
 }
 
 .map-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 </style>
