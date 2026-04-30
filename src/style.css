@@ -120,6 +120,7 @@ h1, h2, h3, .title, .brand {
 /* Common UI Utilities */
 .page-container {
   padding: 24px 20px;
+  padding-bottom: 80px; /* ボトムナビゲーションの高さ分 */
   flex: 1;
   display: flex;
   flex-direction: column;

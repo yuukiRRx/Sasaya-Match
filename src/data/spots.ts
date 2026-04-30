@@ -8,6 +8,7 @@ export interface SpotData {
   description: string;
   tags: string[];
   imageUrl: string;
+  images?: string[]; // 複数画像対応（スライダー用）
   budget?: string;
   duration?: string;
   mapQuery?: string;

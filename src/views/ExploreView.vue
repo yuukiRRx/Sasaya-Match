@@ -5,7 +5,7 @@
     <div class="explore-header">
       <h1 class="title">スポット一覧</h1>
       <router-link to="/recommendations?mode=explore" class="swipe-mode-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        <ArrowUpDown :size="18" :stroke-width="2.5" />
         スワイプで見る
       </router-link>
     </div>
@@ -13,7 +13,7 @@
     <!-- ハッシュタグ検索 -->
     <div class="search-section">
       <div class="search-bar">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <Search :size="18" :stroke-width="2" />
         <input v-model="searchQuery" type="text" placeholder="スポット名やタグで検索..." class="search-input">
       </div>
 
@@ -39,7 +39,8 @@
           :class="{ active: selectedCategory === cat.id, [cat.id]: true }"
           @click="toggleCategory(cat.id)"
         >
-          {{ cat.icon }} {{ cat.name }}
+          <component :is="cat.icon" :size="14" :stroke-width="2" />
+          {{ cat.name }}
         </button>
       </div>
     </div>
@@ -53,7 +54,7 @@
         class="spot-card fade-up-enter"
         :style="{ animationDelay: `${index * 0.08}s` }"
       >
-        <img :src="spot.imageUrl" :alt="spot.name" class="spot-img">
+        <SkeletonImage :src="spot.imageUrl" :alt="spot.name" width="100%" height="180px" border-radius="16px 16px 0 0" class="spot-img" />
         <div class="spot-info">
           <h3 class="spot-name">{{ spot.name }}</h3>
           <p class="spot-feature">{{ spot.feature }}</p>
@@ -71,20 +72,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, markRaw } from 'vue'
 import { spots } from '../data/spots'
 import type { Category } from '../data/spots'
 import BackButton from '../components/BackButton.vue'
+import SkeletonImage from '../components/SkeletonImage.vue'
+import { ArrowUpDown, Search, UtensilsCrossed, Landmark, Mountain, PartyPopper } from 'lucide-vue-next'
 
 const searchQuery = ref('')
 const selectedTag = ref('')
 const selectedCategory = ref<Category | ''>('')
 
 const categories = [
-  { id: 'food' as Category, name: '食べ物', icon: '🍲' },
-  { id: 'history' as Category, name: '歴史', icon: '🏯' },
-  { id: 'sightseeing' as Category, name: '観光', icon: '♨️' },
-  { id: 'festival' as Category, name: '祭り', icon: '🎆' }
+  { id: 'food' as Category, name: '食べ物', icon: markRaw(UtensilsCrossed) },
+  { id: 'history' as Category, name: '歴史', icon: markRaw(Landmark) },
+  { id: 'sightseeing' as Category, name: '観光', icon: markRaw(Mountain) },
+  { id: 'festival' as Category, name: '祭り', icon: markRaw(PartyPopper) }
 ]
 
 // 全タグを取得（重複排除）
@@ -258,6 +261,9 @@ const filteredSpots = computed(() => {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .cat-btn:hover {

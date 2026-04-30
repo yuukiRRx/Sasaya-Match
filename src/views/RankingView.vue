@@ -14,7 +14,8 @@
         :class="{ active: selectedTab === tab.id }"
         @click="selectedTab = tab.id"
       >
-        {{ tab.icon }} {{ tab.name }}
+        <component :is="tab.icon" :size="14" :stroke-width="2" class="tab-icon" />
+        {{ tab.name }}
       </button>
     </div>
 
@@ -30,7 +31,7 @@
         <div class="rank-number" :class="{ gold: index === 0, silver: index === 1, bronze: index === 2 }">
           {{ index + 1 }}
         </div>
-        <img :src="spot.imageUrl" :alt="spot.name" class="rank-img">
+        <SkeletonImage :src="spot.imageUrl" :alt="spot.name" width="80px" height="80px" border-radius="12px" class="rank-img" />
         <div class="rank-info">
           <h3 class="rank-name">{{ spot.name }}</h3>
           <p class="rank-feature">{{ spot.feature }}</p>
@@ -41,17 +42,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, markRaw } from 'vue'
 import { spots } from '../data/spots'
 import BackButton from '../components/BackButton.vue'
+import SkeletonImage from '../components/SkeletonImage.vue'
+import { Crown, UtensilsCrossed, Trees, Landmark } from 'lucide-vue-next'
 
 const selectedTab = ref('popular')
 
 const tabs = [
-  { id: 'popular', name: '総合', icon: '👑' },
-  { id: 'food', name: 'グルメ', icon: '🍽️' },
-  { id: 'nature', name: '自然', icon: '🌿' },
-  { id: 'culture', name: '文化', icon: '🏯' }
+  { id: 'popular', name: '総合', icon: markRaw(Crown) },
+  { id: 'food', name: 'グルメ', icon: markRaw(UtensilsCrossed) },
+  { id: 'nature', name: '自然', icon: markRaw(Trees) },
+  { id: 'culture', name: '文化', icon: markRaw(Landmark) }
 ]
 
 // 仮のランキングデータ（スポットが増えてきたら本格的に調整する）
@@ -99,6 +102,9 @@ const rankedSpots = computed(() => {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .rank-tab:hover {

@@ -12,25 +12,25 @@
     <!-- メインメニューカード -->
     <div class="menu-grid">
       <router-link to="/diagnosis" class="menu-card diagnosis-card">
-        <div class="icon-wrapper"><div class="card-icon">🔮</div></div>
+        <div class="icon-wrapper"><div class="card-icon"><Sparkles :size="28" :stroke-width="1.8" /></div></div>
         <h3 class="card-title">興味診断</h3>
         <p class="card-desc">3つの質問であなたに<br>ぴったりのスポットを発見</p>
       </router-link>
 
       <router-link to="/explore" class="menu-card explore-card">
-        <div class="icon-wrapper"><div class="card-icon">📍</div></div>
+        <div class="icon-wrapper"><div class="card-icon"><Compass :size="28" :stroke-width="1.8" /></div></div>
         <h3 class="card-title">スポット一覧</h3>
         <p class="card-desc">すべてのスポットを<br>自由に探索</p>
       </router-link>
 
       <router-link to="/favorites" class="menu-card favorites-card">
-        <div class="icon-wrapper"><div class="card-icon">❤️</div></div>
+        <div class="icon-wrapper"><div class="card-icon"><Heart :size="28" :stroke-width="1.8" /></div></div>
         <h3 class="card-title">お気に入り</h3>
         <p class="card-desc">保存したスポット<br>{{ store.favorites.length }}件</p>
       </router-link>
 
       <router-link to="/ranking" class="menu-card ranking-card">
-        <div class="icon-wrapper"><div class="card-icon">🏆</div></div>
+        <div class="icon-wrapper"><div class="card-icon"><Trophy :size="28" :stroke-width="1.8" /></div></div>
         <h3 class="card-title">ランキング</h3>
         <p class="card-desc">みんなのおすすめ<br>人気スポット</p>
       </router-link>
@@ -38,7 +38,7 @@
 
     <!-- 旅行計画ボタン -->
     <router-link to="/plan" class="plan-banner">
-      <div class="plan-icon-wrap">🗺️</div>
+      <div class="plan-icon-wrap"><Map :size="32" :stroke-width="1.8" /></div>
       <div class="plan-text">
         <h3>旅行計画を作る</h3>
         <p>予算を決めて、あなただけのプランを自動生成</p>
@@ -53,6 +53,7 @@
 <script setup lang="ts">
 import { store } from '../store'
 import { getGreeting } from '../utils/timeTheme.ts'
+import { Sparkles, Compass, Heart, Trophy, Map } from 'lucide-vue-next'
 
 const greeting = getGreeting()
 const userInitial = store.userName ? store.userName.charAt(0).toUpperCase() : 'G'
@@ -185,7 +186,16 @@ const userInitial = store.userName ? store.userName.charAt(0).toUpperCase() : 'G
 
 .card-icon {
   font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+/* アイコンの色をカードごとに設定 */
+.diagnosis-card .card-icon { color: var(--primary-color); }
+.explore-card .card-icon { color: var(--sightseeing-color); }
+.favorites-card .card-icon { color: #E74C3C; }
+.ranking-card .card-icon { color: #F39C12; }
 
 .card-title {
   font-family: var(--font-serif);
@@ -248,6 +258,9 @@ const userInitial = store.userName ? store.userName.charAt(0).toUpperCase() : 'G
   font-size: 36px;
   flex-shrink: 0;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .plan-text {

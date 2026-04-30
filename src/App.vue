@@ -4,10 +4,12 @@
       <component :is="Component" />
     </transition>
   </router-view>
+  <!-- ボトムナビゲーション -->
+  <BottomNav />
 </template>
 
 <script setup lang="ts">
-// Main App Component
+import BottomNav from './components/BottomNav.vue'
 </script>
 
 <style>

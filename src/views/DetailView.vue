@@ -1,17 +1,18 @@
 <template>
   <div class="detail-container">
     <div class="header-image" v-if="spot">
-      <img :src="spot.imageUrl" :alt="spot.name">
+      <!-- 画像スライダー（複数画像対応） -->
+      <ImageSlider :images="spotImages" :alt="spot.name" />
       <div class="image-gradient"></div>
       
       <button @click="router.back()" class="back-icon-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <ArrowLeft :size="24" :stroke-width="2" />
       </button>
 
       <!-- お気に入りボタン -->
       <button @click="toggleFavorite" class="favorite-btn" :class="{ 'is-favorite': isFavorite }">
-        <svg v-if="isFavorite" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#C0392B" stroke="#C0392B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        <Heart v-if="isFavorite" :size="24" :stroke-width="2" fill="#C0392B" color="#C0392B" />
+        <Heart v-else :size="24" :stroke-width="2" />
       </button>
     </div>
     
@@ -25,14 +26,14 @@
       
       <div class="info-grid">
         <div class="info-item">
-          <span class="info-icon">💰</span>
+          <span class="info-icon"><Wallet :size="24" :stroke-width="1.8" /></span>
           <div class="info-text">
             <span class="info-label">予算の目安</span>
             <span class="info-value">{{ spot.budget }}</span>
           </div>
         </div>
         <div class="info-item">
-          <span class="info-icon">⏱️</span>
+          <span class="info-icon"><Clock :size="24" :stroke-width="1.8" /></span>
           <div class="info-text">
             <span class="info-label">滞在時間の目安</span>
             <span class="info-value">{{ spot.duration }}</span>
@@ -45,7 +46,7 @@
         target="_blank" 
         class="map-btn"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <MapPin :size="20" :stroke-width="2" />
         Google Mapsで経路を見る
       </a>
     </div>
@@ -58,6 +59,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { spots } from '../data/spots'
 import { store } from '../store'
 import { playPopSound } from '../utils/sound.ts'
+import { ArrowLeft, Heart, Wallet, Clock, MapPin } from 'lucide-vue-next'
+import ImageSlider from '../components/ImageSlider.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -65,6 +68,14 @@ const spotId = route.params.id as string
 
 const spot = computed(() => {
   return spots.find(s => s.id === spotId)
+})
+
+// 画像配列（imagesがあればそれを、なければimageUrlを使う）
+const spotImages = computed(() => {
+  if (!spot.value) return []
+  return spot.value.images && spot.value.images.length > 0
+    ? spot.value.images
+    : [spot.value.imageUrl]
 })
 
 const isFavorite = computed(() => {

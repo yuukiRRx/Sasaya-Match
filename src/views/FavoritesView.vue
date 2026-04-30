@@ -14,24 +14,24 @@
         :style="{ animationDelay: `${index * 0.1}s` }"
       >
         <router-link :to="'/detail/' + spot.id" class="fav-link">
-          <img :src="spot.imageUrl" :alt="spot.name" class="fav-img">
+          <SkeletonImage :src="spot.imageUrl" :alt="spot.name" width="100px" height="100px" class="fav-img" />
           <div class="fav-info">
             <h3 class="fav-name">{{ spot.name }}</h3>
             <p class="fav-feature">{{ spot.feature }}</p>
-            <span class="fav-budget">💰 {{ spot.budget }}</span>
+            <span class="fav-budget"><Wallet :size="14" :stroke-width="2" /> {{ spot.budget }}</span>
           </div>
         </router-link>
         <button @click="removeFav(spot.id)" class="remove-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <X :size="18" :stroke-width="2" />
         </button>
       </div>
     </div>
 
     <!-- 空の状態 -->
     <div v-else class="empty-state">
-      <span class="empty-emoji">💔</span>
+      <div class="empty-icon-wrap"><HeartOff :size="48" :stroke-width="1.5" /></div>
       <p class="empty-title">まだお気に入りがありません</p>
-      <p class="empty-desc">スポットの詳細画面で ❤️ ボタンを押すと<br>ここに保存されます。</p>
+      <p class="empty-desc">スポットの詳細画面で <Heart :size="14" :stroke-width="2" class="inline-icon" /> ボタンを押すと<br>ここに保存されます。</p>
       <router-link to="/explore" class="btn-primary empty-btn">スポットを探す</router-link>
     </div>
   </div>
@@ -43,6 +43,8 @@ import { store } from '../store'
 import { spots } from '../data/spots'
 import { playPopSound } from '../utils/sound.ts'
 import BackButton from '../components/BackButton.vue'
+import { Wallet, X, HeartOff, Heart } from 'lucide-vue-next'
+import SkeletonImage from '../components/SkeletonImage.vue'
 
 const favSpots = computed(() => {
   return spots.filter(s => store.favorites.includes(s.id))
@@ -132,6 +134,9 @@ const removeFav = (id: string) => {
   font-size: 12px;
   font-weight: 800;
   color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .remove-btn {
@@ -168,9 +173,10 @@ const removeFav = (id: string) => {
   padding: 40px 0;
 }
 
-.empty-emoji {
-  font-size: 56px;
-  margin-bottom: 20px;
+.empty-icon-wrap {
+  color: var(--text-light);
+  margin-bottom: 24px;
+  opacity: 0.5;
 }
 
 .empty-title {
@@ -186,6 +192,16 @@ const removeFav = (id: string) => {
   color: var(--text-light);
   line-height: 1.8;
   margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.inline-icon {
+  color: #E74C3C;
+  vertical-align: middle;
 }
 
 .empty-btn {
