@@ -1,17 +1,19 @@
 <template>
-  <!-- ログイン前・ホーム画面・詳細画面ではナビを非表示 -->
-  <nav v-if="showNav" class="bottom-nav">
-    <router-link
-      v-for="item in navItems"
-      :key="item.path"
-      :to="item.path"
-      class="nav-item"
-      :class="{ active: isActive(item.path) }"
-    >
-      <component :is="item.icon" :size="24" :stroke-width="isActive(item.path) ? 2.5 : 1.8" />
-      <span class="nav-label">{{ item.label }}</span>
-    </router-link>
-  </nav>
+  <Teleport to="body">
+    <!-- ログイン前・ホーム画面・詳細画面ではナビを非表示 -->
+    <nav v-if="showNav" class="bottom-nav">
+      <router-link
+        v-for="item in navItems"
+        :key="item.path"
+        :to="item.path"
+        class="nav-item"
+        :class="{ active: isActive(item.path) }"
+      >
+        <component :is="item.icon" :size="24" :stroke-width="isActive(item.path) ? 2.5 : 1.8" />
+        <span class="nav-label">{{ item.label }}</span>
+      </router-link>
+    </nav>
+  </Teleport>
 </template>
 
 <script setup lang="ts">

@@ -3,86 +3,86 @@
     <!-- 上部ナビゲーション -->
     <div class="swipe-nav">
       <button @click="goBack" class="nav-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <ArrowLeft :size="22" :stroke-width="2.5" />
       </button>
-      <span class="nav-counter">{{ currentIndex + 1 }} / {{ filteredSpots.length }}</span>
+      <span class="nav-counter" v-if="filteredSpots.length > 0">
+        {{ currentIndex + 1 }} / {{ filteredSpots.length }}
+      </span>
       <router-link to="/summary" class="nav-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        <Check :size="22" :stroke-width="2.5" />
       </router-link>
     </div>
 
-    <!-- 縦スナップスクロールのカード群 -->
-    <div class="snap-scroll" ref="scrollContainer" @scroll="onScroll">
+    <!-- デッキ（カード群） -->
+    <div class="deck">
       <div 
-        v-for="(spot, index) in filteredSpots" 
-        :key="spot.id" 
-        class="snap-card"
+        v-for="(spot, index) in remainingSpots" 
+        :key="spot.id"
+        class="tinder-card"
+        :style="getCardStyle(index)"
+        @mousedown="index === 0 ? startDrag($event) : null"
+        @touchstart="index === 0 ? startDrag($event) : null"
       >
-        <!-- 背景画像 -->
-        <img :src="spot.imageUrl" :alt="spot.name" class="snap-bg">
-        <div class="snap-gradient"></div>
+        <img :src="spot.imageUrl" class="card-bg">
+        <div class="card-gradient"></div>
+        
+        <!-- LIKE / NOPE スタンプ -->
+        <div v-if="index === 0" class="stamp stamp-like" :style="{ opacity: likeOpacity }">LIKE</div>
+        <div v-if="index === 0" class="stamp stamp-nope" :style="{ opacity: nopeOpacity }">NOPE</div>
 
-        <!-- コンテンツ（画面下部に表示） -->
-        <div class="snap-content">
-          <div class="snap-tags">
-            <span v-for="tag in spot.tags" :key="tag" class="snap-tag">{{ tag }}</span>
+        <!-- コンテンツ -->
+        <div class="card-content">
+          <div class="card-tags">
+            <span v-for="tag in spot.tags.slice(0, 3)" :key="tag" class="card-tag">{{ tag }}</span>
           </div>
-          <h2 class="snap-name">{{ spot.name }}</h2>
-          <p class="snap-feature">{{ spot.feature }}</p>
-          
-          <div class="snap-meta">
-            <span class="meta-item">💰 {{ spot.budget }}</span>
-            <span class="meta-item">⏱️ {{ spot.duration }}</span>
+          <h2 class="card-name">{{ spot.name }}</h2>
+          <p class="card-feature">{{ spot.feature }}</p>
+          <div class="card-meta">
+            <span><Wallet :size="14" :stroke-width="2" class="inline-icon"/> {{ spot.budget }}</span>
+            <span><Clock :size="14" :stroke-width="2" class="inline-icon"/> {{ spot.duration }}</span>
           </div>
-        </div>
-
-        <!-- サイドアクションバー（TikTok風） -->
-        <div class="action-bar">
-          <button @click.stop="toggleFavorite(spot.id)" class="action-btn">
-            <svg v-if="isFav(spot.id)" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="#FF4757" stroke="#FF4757" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-            <svg v-else xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-            <span class="action-label">保存</span>
-          </button>
-          <button @click.stop="openMap(spot)" class="action-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <span class="action-label">地図</span>
-          </button>
-          <router-link :to="'/detail/' + spot.id" class="action-btn" @click.stop>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-            <span class="action-label">詳細</span>
-          </router-link>
-        </div>
-
-        <!-- スワイプガイド（最初のカードだけ表示） -->
-        <div v-if="index === 0 && showGuide" class="swipe-guide" @click="showGuide = false">
-          <div class="guide-arrow">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          </div>
-          <span class="guide-text">上にスワイプして次のスポットへ</span>
         </div>
       </div>
+
+      <!-- 空の状態 -->
+      <div v-if="remainingSpots.length === 0" class="empty-deck">
+        <div class="empty-icon"><Sparkles :size="48" stroke-width="1.5" /></div>
+        <h3>すべてのスポットを見ました！</h3>
+        <p>お気に入りから旅行計画を作りましょう</p>
+        <button @click="goToSummary" class="btn-primary mt-4">結果を見る</button>
+      </div>
+    </div>
+
+    <!-- アクションボタン -->
+    <div class="action-buttons" v-if="remainingSpots.length > 0">
+      <button class="action-btn btn-nope" @click="swipe('left')">
+        <X :size="28" :stroke-width="3" />
+      </button>
+      <button class="action-btn btn-detail" @click="goToDetail(remainingSpots[0].id)">
+        <Info :size="24" :stroke-width="2.5" />
+      </button>
+      <button class="action-btn btn-like" @click="swipe('right')">
+        <Heart :size="28" :stroke-width="3" fill="currentColor" />
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { store } from '../store'
 import { spots } from '../data/spots'
 import type { SpotData } from '../data/spots'
 import { playPopSound } from '../utils/sound.ts'
+import { ArrowLeft, Check, Heart, X, Info, Wallet, Clock, Sparkles } from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
-const scrollContainer = ref<HTMLElement | null>(null)
-const currentIndex = ref(0)
-const showGuide = ref(true)
 
-// モード判定: ?mode=explore ならランダム全件、それ以外は診断結果
+// モード判定
 const isExploreMode = computed(() => route.query.mode === 'explore')
 
-// ランダムシャッフル関数
 const shuffle = <T>(arr: T[]): T[] => {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -92,57 +92,130 @@ const shuffle = <T>(arr: T[]): T[] => {
   return a
 }
 
-// 診断モードではカテゴリでフィルタ、探索モードではランダムで全件表示
 const filteredSpots = computed(() => {
   if (isExploreMode.value) {
     return shuffle(spots)
   }
   if (!store.selectedCategory) {
-    router.replace('/diagnosis')
-    return []
+    return spots.slice(0, 6) // カテゴリ未選択時はデフォルト表示
   }
   return spots.filter(spot => spot.category === store.selectedCategory)
 })
 
-const isFav = (id: string) => store.favorites.includes(id)
+const remainingSpots = ref<SpotData[]>([])
+const currentIndex = ref(0)
 
-const toggleFavorite = (id: string) => {
-  playPopSound()
-  if (isFav(id)) {
-    store.favorites = store.favorites.filter(fid => fid !== id)
+watch(filteredSpots, (newSpots) => {
+  if (remainingSpots.value.length === 0 && newSpots.length > 0) {
+    remainingSpots.value = [...newSpots]
+    currentIndex.value = 0
+  }
+}, { immediate: true })
+
+// --- スワイプ（ドラッグ）処理 ---
+const isDragging = ref(false)
+const startX = ref(0)
+const startY = ref(0)
+const deltaX = ref(0)
+const deltaY = ref(0)
+const swipeThreshold = 80
+
+const startDrag = (e: MouseEvent | TouchEvent) => {
+  if (remainingSpots.value.length === 0) return
+  isDragging.value = true
+  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+  startX.value = clientX
+  startY.value = clientY
+}
+
+const onDrag = (e: MouseEvent | TouchEvent) => {
+  if (!isDragging.value) return
+  if (e.cancelable) e.preventDefault()
+  const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+  const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
+  deltaX.value = clientX - startX.value
+  deltaY.value = (clientY - startY.value) * 0.3 // 縦方向は控えめに
+}
+
+const stopDrag = () => {
+  if (!isDragging.value) return
+  isDragging.value = false
+  
+  if (deltaX.value > swipeThreshold) {
+    swipe('right')
+  } else if (deltaX.value < -swipeThreshold) {
+    swipe('left')
   } else {
-    store.favorites.push(id)
+    deltaX.value = 0
+    deltaY.value = 0
   }
 }
 
-const openMap = (spot: SpotData) => {
-  window.open(
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.mapQuery || spot.name)}`,
-    '_blank'
-  )
-}
+const swipe = (direction: 'left' | 'right') => {
+  if (remainingSpots.value.length === 0) return
+  playPopSound()
+  
+  const currentSpot = remainingSpots.value[0]
+  if (direction === 'right') {
+    if (!store.favorites.includes(currentSpot.id)) {
+      store.favorites.push(currentSpot.id)
+    }
+  }
 
-const goBack = () => {
-  router.back()
-}
-
-// スクロール位置から現在のカードインデックスを計算
-const onScroll = () => {
-  if (!scrollContainer.value) return
-  const container = scrollContainer.value
-  const cardHeight = container.clientHeight
-  const scrollTop = container.scrollTop
-  currentIndex.value = Math.round(scrollTop / cardHeight)
-  // 少しでもスクロールしたらガイドを消す
-  if (scrollTop > 30) showGuide.value = false
-}
-
-// 最初のカードが表示された3秒後にガイドを自動で消す
-onMounted(() => {
+  deltaX.value = direction === 'right' ? window.innerWidth * 1.5 : -window.innerWidth * 1.5
+  deltaY.value = 50
+  
   setTimeout(() => {
-    showGuide.value = false
-  }, 3000)
+    remainingSpots.value.shift()
+    deltaX.value = 0
+    deltaY.value = 0
+    currentIndex.value++
+  }, 300)
+}
+
+const getCardStyle = (index: number) => {
+  if (index === 0) {
+    const rotate = deltaX.value * 0.04
+    return {
+      transform: `translate(${deltaX.value}px, ${deltaY.value}px) rotate(${rotate}deg)`,
+      transition: isDragging.value ? 'none' : 'transform 0.3s ease',
+      zIndex: 10
+    }
+  } else if (index === 1) {
+    const progress = Math.min(1, Math.abs(deltaX.value) / 150)
+    const scale = 0.93 + progress * 0.07
+    const y = 12 - progress * 12
+    return {
+      transform: `scale(${scale}) translateY(${y}px)`,
+      transition: isDragging.value ? 'none' : 'transform 0.3s ease',
+      zIndex: 9
+    }
+  } else {
+    return { display: 'none' }
+  }
+}
+
+const likeOpacity = computed(() => Math.max(0, Math.min(1, deltaX.value / 80)))
+const nopeOpacity = computed(() => Math.max(0, Math.min(1, -deltaX.value / 80)))
+
+onMounted(() => {
+  window.addEventListener('mousemove', onDrag, { passive: false })
+  window.addEventListener('mouseup', stopDrag)
+  window.addEventListener('touchmove', onDrag, { passive: false })
+  window.addEventListener('touchend', stopDrag)
 })
+
+onUnmounted(() => {
+  window.removeEventListener('mousemove', onDrag)
+  window.removeEventListener('mouseup', stopDrag)
+  window.removeEventListener('touchmove', onDrag)
+  window.removeEventListener('touchend', stopDrag)
+})
+
+const goBack = () => router.back()
+const goToSummary = () => router.push('/summary')
+const goToDetail = (id: string) => router.push('/detail/' + id)
 </script>
 
 <style scoped>
@@ -150,16 +223,17 @@ onMounted(() => {
   position: relative;
   width: 100%;
   height: 100vh;
-  background: #000;
+  height: 100dvh; /* モバイルブラウザ対応 */
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 上部ナビゲーション */
 .swipe-nav {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   z-index: 20;
   display: flex;
   align-items: center;
@@ -172,228 +246,224 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 48px; height: 48px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.2);
   backdrop-filter: blur(10px);
-  border: none;
+  border: 1px solid rgba(255,255,255,0.2);
   color: white;
   cursor: pointer;
-  transition: all 0.2s;
   text-decoration: none;
-}
-
-.nav-btn:hover {
-  background: rgba(255,255,255,0.3);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-counter {
   color: white;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
   letter-spacing: 2px;
-  background: rgba(0,0,0,0.3);
-  padding: 6px 16px;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
 }
 
-/* スナップスクロール本体 */
-.snap-scroll {
-  width: 100%;
-  height: 100vh;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* カード */
-.snap-card {
+/* デッキ領域 */
+.deck {
+  flex: 1;
   position: relative;
-  width: 100%;
-  height: 100vh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 100px;
 }
 
-.snap-bg {
+/* スワイプカード */
+.tinder-card {
   position: absolute;
-  top: 0;
-  left: 0;
+  width: calc(100% - 32px);
+  max-width: 380px;
+  height: 70vh;
+  height: 70dvh;
+  max-height: 580px;
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tinder-card:active {
+  cursor: grabbing;
+}
+
+.card-bg {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* ゆっくりズームするアニメーション */
-  animation: slowZoom 20s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
-@keyframes slowZoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.15); }
-}
-
-.snap-gradient {
+.card-gradient {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.1) 0%,
-    rgba(0,0,0,0) 40%,
-    rgba(0,0,0,0.4) 70%,
-    rgba(0,0,0,0.85) 100%
-  );
+  bottom: 0; left: 0; right: 0;
+  height: 65%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+  pointer-events: none;
 }
 
-/* 下部のコンテンツ表示 */
-.snap-content {
+/* スタンプ */
+.stamp {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 80px; /* サイドバーのスペースを確保 */
-  padding: 32px 20px;
+  top: 50px;
+  padding: 8px 20px;
+  border-radius: 12px;
+  border: 4px solid;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 4px;
   z-index: 10;
-  color: white;
+  pointer-events: none;
 }
 
-.snap-tags {
+.stamp-like {
+  right: 30px;
+  color: #2ECC71;
+  border-color: #2ECC71;
+  transform: rotate(12deg);
+}
+
+.stamp-nope {
+  left: 30px;
+  color: #E74C3C;
+  border-color: #E74C3C;
+  transform: rotate(-12deg);
+}
+
+/* カードコンテンツ */
+.card-content {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 28px 24px;
+  color: white;
+  pointer-events: none;
+}
+
+.card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 12px;
 }
 
-.snap-tag {
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(5px);
-  padding: 4px 12px;
-  border-radius: 20px;
+.card-tag {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
 }
 
-.snap-name {
+.card-name {
   font-family: var(--font-serif);
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 900;
   margin-bottom: 8px;
-  text-shadow: 0 2px 15px rgba(0,0,0,0.5);
-  line-height: 1.3;
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
-.snap-feature {
+.card-feature {
   font-size: 14px;
-  opacity: 0.85;
-  line-height: 1.6;
-  margin-bottom: 16px;
+  opacity: 0.9;
+  margin-bottom: 14px;
+  line-height: 1.5;
 }
 
-.snap-meta {
+.card-meta {
   display: flex;
   gap: 16px;
-}
-
-.meta-item {
   font-size: 13px;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(5px);
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* サイドアクションバー */
-.action-bar {
+.inline-icon {
+  vertical-align: middle;
+  margin-top: -2px;
+}
+
+/* アクションボタン */
+.action-buttons {
   position: absolute;
-  right: 12px;
-  bottom: 100px;
-  z-index: 10;
+  bottom: 28px;
+  left: 0; right: 0;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
+  z-index: 20;
 }
 
 .action-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  background: none;
+  border-radius: 50%;
   border: none;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  color: white;
-}
-
-.action-btn:hover {
-  transform: scale(1.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .action-btn:active {
   transform: scale(0.9);
 }
 
-.action-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.9);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+.btn-nope {
+  width: 64px; height: 64px;
+  color: #E74C3C;
+}
+.btn-like {
+  width: 64px; height: 64px;
+  color: #2ECC71;
+}
+.btn-detail {
+  width: 52px; height: 52px;
+  color: #3498DB;
 }
 
-/* スワイプガイド */
-.swipe-guide {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(3px);
-  animation: guideAppear 0.5s ease-out;
-  cursor: pointer;
-}
-
-@keyframes guideAppear {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.guide-arrow {
-  animation: bounceUp 1s ease-in-out infinite;
-}
-
-@keyframes bounceUp {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-
-.guide-text {
+/* 空の状態 */
+.empty-deck {
+  text-align: center;
   color: white;
-  font-size: 15px;
-  font-weight: 700;
-  margin-top: 16px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  letter-spacing: 1px;
+  padding: 40px;
 }
 
-/* スクロールバーを非表示に */
-.snap-scroll::-webkit-scrollbar {
-  display: none;
+.empty-icon {
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 16px;
 }
-.snap-scroll {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+.empty-deck h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.empty-deck p {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.mt-4 {
+  margin-top: 24px;
+}
+
+.empty-deck .btn-primary {
+  width: auto;
+  padding: 14px 40px;
 }
 </style>
