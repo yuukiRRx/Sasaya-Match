@@ -17,16 +17,23 @@
         <input v-model="searchQuery" type="text" placeholder="スポット名やタグで検索..." class="search-input">
       </div>
 
-      <!-- タグ一覧 -->
+      <!-- タグ一覧（最初は5個だけ表示） -->
       <div class="tag-filter">
         <button 
-          v-for="tag in allTags" 
+          v-for="tag in displayedTags" 
           :key="tag" 
           class="filter-tag"
           :class="{ active: selectedTag === tag }"
           @click="toggleTag(tag)"
         >
           {{ tag }}
+        </button>
+        <button 
+          v-if="allTags.length > 5" 
+          class="filter-tag more-tag"
+          @click="showAllTags = !showAllTags"
+        >
+          {{ showAllTags ? '閉じる' : `もっと見る (+${allTags.length - 5})` }}
         </button>
       </div>
 
@@ -54,7 +61,7 @@
         class="spot-card fade-up-enter"
         :style="{ animationDelay: `${index * 0.08}s` }"
       >
-        <SkeletonImage :src="spot.imageUrl" :alt="spot.name" width="100%" height="180px" border-radius="16px 16px 0 0" class="spot-img" />
+        <img :src="spot.imageUrl" :alt="spot.name" class="spot-img" loading="lazy">
         <div class="spot-info">
           <h3 class="spot-name">{{ spot.name }}</h3>
           <p class="spot-feature">{{ spot.feature }}</p>
@@ -76,7 +83,6 @@ import { ref, computed, markRaw } from 'vue'
 import { spots } from '../data/spots'
 import type { Category } from '../data/spots'
 import BackButton from '../components/BackButton.vue'
-import SkeletonImage from '../components/SkeletonImage.vue'
 import { ArrowUpDown, Search, UtensilsCrossed, Landmark, Mountain, PartyPopper } from 'lucide-vue-next'
 
 const searchQuery = ref('')
@@ -95,6 +101,12 @@ const allTags = computed(() => {
   const tags = new Set<string>()
   spots.forEach(s => s.tags.forEach(t => tags.add(t)))
   return Array.from(tags)
+})
+
+// 「もっと見る」の開閉状態
+const showAllTags = ref(false)
+const displayedTags = computed(() => {
+  return showAllTags.value ? allTags.value : allTags.value.slice(0, 5)
 })
 
 const toggleTag = (tag: string) => {
@@ -227,6 +239,14 @@ const filteredSpots = computed(() => {
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+/* 「もっと見る」ボタンのスタイル */
+.more-tag {
+  background: rgba(138, 58, 58, 0.06);
+  color: var(--primary-color);
+  border: 1px dashed rgba(138, 58, 58, 0.3);
+  font-weight: 800;
 }
 
 .filter-tag:hover {
