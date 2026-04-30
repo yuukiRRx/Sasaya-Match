@@ -8,7 +8,7 @@
       class="nav-item"
       :class="{ active: isActive(item.path) }"
     >
-      <component :is="item.icon" :size="22" :stroke-width="isActive(item.path) ? 2.5 : 1.8" />
+      <component :is="item.icon" :size="24" :stroke-width="isActive(item.path) ? 2.5 : 1.8" />
       <span class="nav-label">{{ item.label }}</span>
     </router-link>
   </nav>
@@ -53,13 +53,13 @@ const isActive = (path: string) => {
   max-width: 400px;
   display: flex;
   justify-content: space-around;
-  align-items: center;
-  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.92);
+  align-items: stretch;
+  padding: 4px 0 calc(4px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   z-index: 100;
 }
 
@@ -70,17 +70,22 @@ const isActive = (path: string) => {
   }
 }
 
+/* タップ領域を大きくしてスマホで押しやすく */
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 3px;
   text-decoration: none;
   color: var(--text-light);
-  padding: 6px 16px;
+  padding: 10px 20px;
+  min-height: 56px;
+  min-width: 64px;
   border-radius: 16px;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item.active {
@@ -94,18 +99,19 @@ const isActive = (path: string) => {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 28px;
+  width: 32px;
   height: 3px;
   border-radius: 0 0 3px 3px;
   background: linear-gradient(90deg, var(--primary-color), var(--festival-color));
 }
 
 .nav-item:active {
-  transform: scale(0.9);
+  transform: scale(0.92);
+  background: rgba(138, 58, 58, 0.05);
 }
 
 .nav-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.3px;
 }
