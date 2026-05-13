@@ -72,6 +72,12 @@ const routes: RouteRecordRaw[] = [
     name: 'Plan',
     component: () => import('../views/PlanView.vue'),
     meta: { transition: 'slide' }
+  },
+  {
+    path: '/plan/custom',
+    name: 'CustomPlan',
+    component: () => import('../views/CustomPlanView.vue'),
+    meta: { transition: 'slide' }
   }
 ]
 

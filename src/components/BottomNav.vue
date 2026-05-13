@@ -45,7 +45,7 @@ const isActive = (path: string) => {
 }
 </script>
 
-<style scoped>
+<style>
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -57,10 +57,10 @@ const isActive = (path: string) => {
   justify-content: space-around;
   align-items: stretch;
   padding: 4px 0 calc(4px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
   z-index: 100;
 }

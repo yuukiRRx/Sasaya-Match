@@ -44,15 +44,67 @@
       </div>
     </div>
 
-    <!-- タイムライン -->
-    <div v-if="planSpots.length > 0">
+    <!-- モード選択 -->
+    <div class="mode-tabs">
+      <button class="mode-tab" :class="{ active: mode === 'auto' }" @click="mode = 'auto'">
+        <Sparkles :size="16" :stroke-width="2" /> 自動で作成
+      </button>
+      <router-link to="/plan/custom" class="mode-tab">
+        <PenLine :size="16" :stroke-width="2" /> 自分で作成
+      </router-link>
+    </div>
+
+    <!-- 自動プラン：条件入力フォーム -->
+    <div v-if="mode === 'auto' && !planGenerated" class="pref-form">
       <h2 class="section-title">
-        <Route :size="18" :stroke-width="2" />
-        1日観光ルート
+        <SlidersHorizontal :size="18" :stroke-width="2" />
+        条件を設定
       </h2>
+
+      <label class="form-label">予算（1人あたり）</label>
+      <div class="budget-options">
+        <button v-for="opt in budgetOptions" :key="opt.value"
+          class="budget-btn" :class="{ active: prefBudget === opt.value }"
+          @click="prefBudget = opt.value">
+          {{ opt.label }}
+        </button>
+      </div>
+
+      <label class="form-label">開始時間</label>
+      <select v-model="prefStartTime" class="form-select">
+        <option value="9">9:00</option>
+        <option value="10">10:00</option>
+        <option value="11">11:00</option>
+        <option value="12">12:00</option>
+      </select>
+
+      <label class="form-label">滞在時間</label>
+      <div class="budget-options">
+        <button v-for="opt in durationOptions" :key="opt.value"
+          class="budget-btn" :class="{ active: prefDuration === opt.value }"
+          @click="prefDuration = opt.value">
+          {{ opt.label }}
+        </button>
+      </div>
+
+      <button class="btn-primary generate-btn" @click="generatePlan">
+        <Route :size="18" :stroke-width="2" />
+        プランを自動生成
+      </button>
+    </div>
+
+    <!-- 自動プラン：タイムライン結果 -->
+    <div v-if="mode === 'auto' && planGenerated && generatedSpots.length > 0">
+      <div class="result-header">
+        <h2 class="section-title">
+          <Route :size="18" :stroke-width="2" />
+          1日観光ルート
+        </h2>
+        <button class="reset-btn" @click="planGenerated = false">条件変更</button>
+      </div>
       <p class="plan-summary">
         <MapPin :size="14" :stroke-width="2" />
-        {{ planSpots.length }}スポット
+        {{ generatedSpots.length }}スポット
         <span class="dot">·</span>
         <Clock :size="14" :stroke-width="2" />
         約{{ totalDuration }}
@@ -63,20 +115,18 @@
 
       <div class="timeline">
         <div
-          v-for="(spot, index) in planSpots"
+          v-for="(spot, index) in generatedSpots"
           :key="spot.id"
           class="timeline-item fade-up-enter"
           :style="{ animationDelay: `${index * 0.15}s` }"
         >
-          <!-- タイムライン左側のマーカー -->
           <div class="time-marker">
-            <div class="time-dot" :class="{ 'first': index === 0, 'last': index === planSpots.length - 1 }">
+            <div class="time-dot" :class="{ 'first': index === 0 }">
               <span class="time-number">{{ index + 1 }}</span>
             </div>
-            <div class="time-line" v-if="index !== planSpots.length - 1"></div>
+            <div class="time-line" v-if="index !== generatedSpots.length - 1"></div>
           </div>
 
-          <!-- カード本体 -->
           <div class="timeline-content">
             <span class="time-label">{{ getTimeSlot(index) }}</span>
             <router-link :to="'/detail/' + spot.id" class="plan-card">
@@ -90,9 +140,7 @@
                 </div>
               </div>
             </router-link>
-
-            <!-- 移動手段の表示 -->
-            <div class="travel-info" v-if="index !== planSpots.length - 1">
+            <div class="travel-info" v-if="index !== generatedSpots.length - 1">
               <Car :size="14" :stroke-width="2" />
               <span>車で約10〜15分</span>
             </div>
@@ -101,12 +149,12 @@
       </div>
     </div>
 
-    <!-- お気に入りが空の場合 -->
-    <div v-else class="empty-state">
+    <!-- スポットが足りない場合 -->
+    <div v-if="mode === 'auto' && planGenerated && generatedSpots.length === 0" class="empty-state">
       <div class="empty-icon"><MapPin :size="48" :stroke-width="1.5" /></div>
-      <h3>まだスポットがありません</h3>
-      <p>お気に入りに登録したスポットから<br>自動で1日プランを作成します</p>
-      <router-link to="/explore" class="btn-primary explore-btn">スポットを探す</router-link>
+      <h3>条件に合うスポットが見つかりません</h3>
+      <p>予算や時間の条件を変えてみてください</p>
+      <button class="btn-secondary" @click="planGenerated = false">条件を変更する</button>
     </div>
 
     <router-link to="/menu" class="btn-secondary back-btn">メニューに戻る</router-link>
@@ -115,13 +163,100 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, markRaw } from 'vue'
-import { store } from '../store'
 import { spots } from '../data/spots'
+import type { SpotData } from '../data/spots'
 import BackButton from '../components/BackButton.vue'
 import {
   Sun, Cloud, CloudRain, CloudSnow, CloudLightning, Wind,
-  Sparkles, Route, MapPin, Clock, Wallet, Car, Lightbulb
+  Sparkles, Route, MapPin, Clock, Wallet, Car, Lightbulb,
+  SlidersHorizontal, PenLine
 } from 'lucide-vue-next'
+
+// --- モード ---
+const mode = ref<'auto'>('auto')
+
+// --- ユーザー設定 ---
+const prefBudget = ref(5000)
+const prefStartTime = ref('10')
+const prefDuration = ref(5)
+const planGenerated = ref(false)
+const generatedSpots = ref<SpotData[]>([])
+
+const budgetOptions = [
+  { label: '〜3,000円', value: 3000 },
+  { label: '〜5,000円', value: 5000 },
+  { label: '〜10,000円', value: 10000 },
+  { label: '制限なし', value: 99999 }
+]
+
+const durationOptions = [
+  { label: '半日(3h)', value: 3 },
+  { label: '半日(5h)', value: 5 },
+  { label: '1日(7h)', value: 7 },
+  { label: '1日(10h)', value: 10 }
+]
+
+// プラン自動生成
+const generatePlan = () => {
+  const filtered = spots.filter(s => {
+    const m = s.budget?.match(/(\d+)/)
+    const cost = m ? parseInt(m[1]) : 0
+    return cost <= prefBudget.value
+  })
+  const food = filtered.filter(s => s.category === 'food')
+  const others = filtered.filter(s => s.category !== 'food')
+  const balanced: SpotData[] = []
+  let fi = 0, oi = 0
+  while (fi < food.length || oi < others.length) {
+    if (oi < others.length) balanced.push(others[oi++])
+    if (fi < food.length) balanced.push(food[fi++])
+  }
+  let totalMin = 0
+  const maxMin = prefDuration.value * 60
+  const result: SpotData[] = []
+  for (const s of balanced) {
+    const m = s.duration?.match(/(\d+)/)
+    const dur = m ? parseInt(m[1]) : 60
+    if (totalMin + dur + 15 > maxMin && result.length > 0) break
+    result.push(s)
+    totalMin += dur + 15
+  }
+  generatedSpots.value = result.slice(0, 8)
+  planGenerated.value = true
+}
+
+const getTimeSlot = (index: number): string => {
+  const start = parseInt(prefStartTime.value)
+  let minutes = 0
+  for (let i = 0; i < index; i++) {
+    const m = generatedSpots.value[i]?.duration?.match(/(\d+)/)
+    minutes += (m ? parseInt(m[1]) : 60) + 15
+  }
+  const totalMin = start * 60 + minutes
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  return `${h}:${m.toString().padStart(2, '0')}`
+}
+
+const totalDuration = computed(() => {
+  let minutes = 0
+  generatedSpots.value.forEach(s => {
+    const m = s.duration?.match(/(\d+)/)
+    minutes += m ? parseInt(m[1]) : 60
+  })
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m > 0 ? `${h}時間${m}分` : `${h}時間`
+})
+
+const totalBudget = computed(() => {
+  let total = 0
+  generatedSpots.value.forEach(s => {
+    const m = s.budget?.match(/(\d+)/)
+    if (m) total += parseInt(m[1])
+  })
+  return total > 0 ? `約${total.toLocaleString()}円〜` : '無料〜'
+})
 
 // --- 天気情報 ---
 interface WeatherData {
@@ -129,76 +264,47 @@ interface WeatherData {
   description: string
   condition: 'sunny' | 'cloudy' | 'rainy' | 'snowy' | 'stormy' | 'windy'
 }
-
 const weather = ref<WeatherData | null>(null)
-
-// 天気に対応するアイコン
 const weatherIconMap = {
-  sunny: markRaw(Sun),
-  cloudy: markRaw(Cloud),
-  rainy: markRaw(CloudRain),
-  snowy: markRaw(CloudSnow),
-  stormy: markRaw(CloudLightning),
-  windy: markRaw(Wind)
+  sunny: markRaw(Sun), cloudy: markRaw(Cloud), rainy: markRaw(CloudRain),
+  snowy: markRaw(CloudSnow), stormy: markRaw(CloudLightning), windy: markRaw(Wind)
 }
-
 const weatherIcon = computed(() => {
   if (!weather.value) return markRaw(Cloud)
   return weatherIconMap[weather.value.condition] || markRaw(Cloud)
 })
-
-// 天気に応じたアドバイス
 const weatherAdvice = computed(() => {
   if (!weather.value) return ''
-  switch (weather.value.condition) {
-    case 'sunny': return '☀ 絶好のお出かけ日和！屋外スポットがおすすめです'
-    case 'cloudy': return '過ごしやすい天気です。散策にぴったり！'
-    case 'rainy': return '☂ 室内で楽しめるスポットがおすすめです'
-    case 'snowy': return '温かい食事スポットで体を温めましょう'
-    case 'stormy': return '荒天のため室内スポットをお選びください'
-    case 'windy': return '風が強めです。防寒対策をお忘れなく'
-    default: return 'お出かけを楽しみましょう！'
+  const map: Record<string, string> = {
+    sunny: '☀ 絶好のお出かけ日和！屋外スポットがおすすめです',
+    cloudy: '過ごしやすい天気です。散策にぴったり！',
+    rainy: '☂ 室内で楽しめるスポットがおすすめです',
+    snowy: '温かい食事スポットで体を温めましょう',
+    stormy: '荒天のため室内スポットをお選びください',
+    windy: '風が強めです。防寒対策をお忘れなく'
   }
+  return map[weather.value.condition] || 'お出かけを楽しみましょう！'
 })
-
-// 天気に基づくおすすめスポット
 const weatherRecommends = computed(() => {
   if (!weather.value) return []
-  const condition = weather.value.condition
-
-  let filtered = [...spots]
-  if (condition === 'rainy' || condition === 'snowy' || condition === 'stormy') {
-    // 雨・雪・嵐の日は室内系を優先
-    filtered = spots.filter(s =>
-      s.category === 'food' || s.category === 'history' ||
-      s.tags.some(t => t.includes('カフェ') || t.includes('温泉') || t.includes('室内'))
-    )
+  const c = weather.value.condition
+  let f = [...spots]
+  if (c === 'rainy' || c === 'snowy' || c === 'stormy') {
+    f = spots.filter(s => s.category === 'food' || s.category === 'history')
   } else {
-    // 晴れ・曇りは屋外系を優先
-    filtered = spots.filter(s =>
-      s.category === 'sightseeing' || s.category === 'festival' ||
-      s.tags.some(t => t.includes('自然') || t.includes('散歩') || t.includes('アウトドア'))
-    )
+    f = spots.filter(s => s.category === 'sightseeing' || s.category === 'festival')
   }
-
-  // シャッフルして最大4件
-  return filtered.sort(() => Math.random() - 0.5).slice(0, 4)
+  return f.sort(() => Math.random() - 0.5).slice(0, 4)
 })
 
-// 天気データの取得（丹波篠山市の座標）
 onMounted(async () => {
   try {
-    const res = await fetch(
-      'https://api.open-meteo.com/v1/forecast?latitude=35.0758&longitude=135.2205&current_weather=true&timezone=Asia%2FTokyo'
-    )
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.0758&longitude=135.2205&current_weather=true&timezone=Asia%2FTokyo')
     const data = await res.json()
     const cw = data.current_weather
-
-    // WMOコードから天気状態を判定
     let condition: WeatherData['condition'] = 'sunny'
     let description = '晴れ'
     const code = cw.weathercode as number
-
     if (code <= 1) { condition = 'sunny'; description = '快晴' }
     else if (code <= 3) { condition = 'cloudy'; description = '曇り' }
     else if (code <= 49) { condition = 'cloudy'; description = '霧' }
@@ -208,68 +314,15 @@ onMounted(async () => {
     else if (code <= 86) { condition = 'snowy'; description = '雪' }
     else if (code <= 99) { condition = 'stormy'; description = '雷雨' }
     if (cw.windspeed > 30) { condition = 'windy'; description = '強風' }
-
-    weather.value = {
-      temp: Math.round(cw.temperature),
-      description,
-      condition
-    }
+    weather.value = { temp: Math.round(cw.temperature), description, condition }
   } catch {
-    // API取得失敗時はデフォルト値
-    weather.value = {
-      temp: 18,
-      description: '情報取得不可',
-      condition: 'cloudy'
-    }
+    weather.value = { temp: 18, description: '情報取得不可', condition: 'cloudy' }
   }
-})
-
-// --- 旅行プラン ---
-const planSpots = computed(() => {
-  const favs = spots.filter(s => store.favorites.includes(s.id))
-  if (favs.length === 0) return []
-
-  // カテゴリバランスを考慮して並べ替え（食→観光→食→歴史...）
-  const food = favs.filter(s => s.category === 'food')
-  const others = favs.filter(s => s.category !== 'food')
-  const result = []
-  let fi = 0, oi = 0
-  // 交互に配置
-  while (fi < food.length || oi < others.length) {
-    if (oi < others.length) result.push(others[oi++])
-    if (fi < food.length) result.push(food[fi++])
-  }
-  return result.slice(0, 6) // 最大6件
-})
-
-// 時間帯スロット
-const getTimeSlot = (index: number): string => {
-  const slots = ['10:00', '11:30', '13:00', '14:30', '16:00', '17:30']
-  return slots[index] || `${10 + index * 1.5}:00`
-}
-
-// 合計滞在時間の計算
-const totalDuration = computed(() => {
-  let minutes = 0
-  planSpots.value.forEach(s => {
-    const match = s.duration?.match(/(\d+)/)
-    minutes += match ? parseInt(match[1]) : 60
-  })
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m > 0 ? `${h}時間${m}分` : `${h}時間`
-})
-
-// 合計予算の計算
-const totalBudget = computed(() => {
-  let total = 0
-  planSpots.value.forEach(s => {
-    const match = s.budget?.match(/(\d+)/)
-    if (match) total += parseInt(match[1])
-  })
-  return total > 0 ? `約${total.toLocaleString()}円〜` : '無料〜'
 })
 </script>
+
+
+
 
 <style scoped>
 .plan-container {
@@ -366,6 +419,7 @@ const totalBudget = computed(() => {
 
 .recommend-card {
   min-width: 140px;
+  width: 140px;
   height: 180px;
   border-radius: 16px;
   overflow: hidden;
@@ -373,11 +427,13 @@ const totalBudget = computed(() => {
   flex-shrink: 0;
   box-shadow: 0 4px 16px rgba(0,0,0,0.1);
   -webkit-tap-highlight-color: transparent;
+  background: #f0f0f0;
 }
 
 .recommend-img {
-  width: 100%;
-  height: 100%;
+  display: block;
+  width: 140px;
+  height: 180px;
   object-fit: cover;
 }
 
@@ -587,7 +643,126 @@ const totalBudget = computed(() => {
   padding: 14px 40px;
 }
 
+
 .back-btn {
   margin-top: 32px;
+}
+
+/* モード選択タブ */
+.mode-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.mode-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px;
+  min-height: 48px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,1);
+  background: rgba(255,255,255,0.7);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-main);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.mode-tab.active {
+  background: linear-gradient(135deg, var(--primary-color), var(--festival-color));
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(138,58,58,0.2);
+}
+
+/* 条件設定フォーム */
+.pref-form {
+  background: rgba(255,255,255,0.85);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,1);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+.form-label:first-of-type {
+  margin-top: 8px;
+}
+.budget-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.budget-btn {
+  padding: 10px 16px;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.9);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.budget-btn.active {
+  background: linear-gradient(135deg, var(--primary-color), var(--festival-color));
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 3px 10px rgba(138,58,58,0.2);
+}
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: white;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237F8C8D' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.generate-btn {
+  margin-top: 24px;
+  gap: 8px;
+}
+
+/* 結果ヘッダー */
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+.result-header .section-title {
+  margin-bottom: 0;
+}
+.reset-btn {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-color);
+  background: none;
+  border: 1px dashed rgba(138,58,58,0.3);
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 </style>
