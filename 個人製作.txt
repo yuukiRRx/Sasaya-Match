@@ -66,3 +66,13 @@ Production: https://sasaya-match-xxxx.vercel.app
 bash
 vercel --prod
 （--prod をつけると、今見ているURLが最新の状態に上書きされます！）
+
+
+
+
+git add .
+git commit -m "Vercel SPAルーティング修正 & UI/UXアップグレード"
+git push origin main
+2. Vercelに再デプロイ
+bash
+npx vercel --prod
