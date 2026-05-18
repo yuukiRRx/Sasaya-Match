@@ -52,23 +52,23 @@ const isActive = (path: string) => {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 400px;
+  max-width: 430px;
   display: flex;
   justify-content: space-around;
   align-items: stretch;
   padding: 4px 0 calc(4px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(40px) saturate(1.4);
+  -webkit-backdrop-filter: blur(40px) saturate(1.4);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.06);
   z-index: 100;
 }
 
 @media (min-width: 768px) {
   .bottom-nav {
-    max-width: 800px;
-    border-radius: 0 0 24px 24px;
+    max-width: 430px;
+    border-radius: 0 0 28px 28px;
   }
 }
 
@@ -80,36 +80,35 @@ const isActive = (path: string) => {
   justify-content: center;
   gap: 3px;
   text-decoration: none;
-  color: var(--text-light);
+  color: var(--text-secondary);
   padding: 10px 20px;
   min-height: 56px;
   min-width: 64px;
   border-radius: 16px;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.2s var(--ease-ios);
   position: relative;
   -webkit-tap-highlight-color: transparent;
 }
 
 .nav-item.active {
-  color: var(--primary-color);
+  color: var(--primary);
 }
 
-/* アクティブ時の背景インジケーター */
 .nav-item.active::before {
   content: '';
   position: absolute;
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 32px;
+  width: 28px;
   height: 3px;
   border-radius: 0 0 3px 3px;
-  background: linear-gradient(90deg, var(--primary-color), var(--festival-color));
+  background: linear-gradient(90deg, var(--primary), var(--accent));
 }
 
 .nav-item:active {
-  transform: scale(0.92);
-  background: rgba(138, 58, 58, 0.05);
+  transform: scale(0.9);
+  background: rgba(91, 122, 94, 0.06);
 }
 
 .nav-label {
